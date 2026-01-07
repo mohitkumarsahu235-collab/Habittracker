@@ -3,311 +3,417 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Habit Tracker</title>
+    <title>Habit Tracker</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary: #6366f1;
-            --primary-hover: #4f46e5;
-            --bg: #f3f4f6;
-            --card-bg: #ffffff;
-            --text: #1f2937;
-            --text-light: #6b7280;
-            --success: #10b981;
-            --danger: #ef4444;
-            --radius: 12px;
-        }
-
-        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-
+        /* Apple-like System Font */
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            display: flex;
-            justify-content: center;
-            min-height: 100vh;
-            padding: 2rem 1rem;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+            background-color: #F2F2F7; /* iOS System Gray 6 */
+            -webkit-font-smoothing: antialiased;
         }
 
-        .container {
-            width: 100%;
-            max-width: 600px;
+        /* Glassmorphism Utilities */
+        .glass {
+            background: rgba(255, 255, 255, 0.75);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
-        header {
-            text-align: center;
-            margin-bottom: 2rem;
+        .glass-dark {
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        h1 { font-size: 2.5rem; color: var(--primary); margin-bottom: 0.5rem; }
-        p.subtitle { color: var(--text-light); }
-
-        /* Input Section */
-        .add-habit-box {
-            background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: var(--radius);
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-            display: flex;
-            gap: 10px;
-            margin-bottom: 2rem;
-        }
-
-        input[type="text"] {
-            flex-grow: 1;
-            padding: 12px;
-            border: 2px solid #e5e7eb;
-            border-radius: 8px;
-            font-size: 1rem;
-            outline: none;
-            transition: border-color 0.2s;
-        }
-
-        input[type="text"]:focus { border-color: var(--primary); }
-
-        button#add-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 0 1.5rem;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        button#add-btn:hover { background-color: var(--primary-hover); }
-
-        /* Habit List */
-        .habit-list {
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-        }
-
-        .habit-card {
-            background: var(--card-bg);
-            padding: 1.5rem;
-            border-radius: var(--radius);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            animation: slideIn 0.3s ease-out;
-        }
-
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .habit-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .habit-title { font-weight: 700; font-size: 1.2rem; }
-        
-        .delete-btn {
-            background: none;
-            border: none;
-            color: var(--text-light);
-            cursor: pointer;
-            font-size: 1.2rem;
-        }
-        .delete-btn:hover { color: var(--danger); }
-
-        /* Weekly Grid */
-        .week-grid {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .day-column {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 5px;
-        }
-
-        .day-label {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-light);
-        }
-
-        .check-circle {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: 2px solid #e5e7eb;
-            background: white;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-            color: white;
-        }
-
-        .check-circle:hover { border-color: var(--primary); }
-
-        .check-circle.completed {
-            background-color: var(--success);
-            border-color: var(--success);
-            transform: scale(1.1);
-        }
-
-        .check-circle::after {
-            content: '✔';
-            font-size: 1rem;
+        /* Hide scrollbar for horizontal scrolling but keep functionality */
+        .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
-
-        .check-circle.completed::after { display: block; }
-
-        /* Progress Bar */
-        .progress-container {
-            margin-top: 1rem;
-            background-color: #e5e7eb;
-            border-radius: 10px;
-            height: 6px;
-            width: 100%;
-            overflow: hidden;
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
 
-        .progress-bar {
-            height: 100%;
-            background-color: var(--primary);
-            width: 0%;
-            transition: width 0.3s ease;
+        /* Smooth checkbox animation */
+        .check-circle {
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        .check-circle:active {
+            transform: scale(0.9);
+        }
+        
+        /* Modal Animation */
+        @keyframes modalUp {
+            from { transform: translateY(100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .modal-animate {
+            animation: modalUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
 
-        .stats {
-            margin-top: 5px;
-            font-size: 0.85rem;
-            color: var(--text-light);
-            text-align: right;
+        /* Card Hover Effect */
+        .habit-card {
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .habit-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
         }
     </style>
 </head>
-<body>
+<body class="text-gray-800 min-h-screen pb-24 select-none">
 
-<div class="container">
-    <header>
-        <h1>Habit Tracker</h1>
-        <p class="subtitle">Build consistency, one day at a time.</p>
+    <!-- Header Area -->
+    <header class="sticky top-0 z-40 px-6 py-4 glass border-b border-gray-200/50">
+        <div class="max-w-3xl mx-auto flex justify-between items-end">
+            <div>
+                <p class="text-sm font-semibold text-gray-500 uppercase tracking-wide" id="currentDate">TODAY</p>
+                <h1 class="text-3xl font-bold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">My Habits</h1>
+            </div>
+            <div class="flex items-center space-x-3">
+                <div class="text-right hidden sm:block">
+                    <p class="text-xs font-medium text-gray-400">COMPLETED</p>
+                    <p class="text-xl font-bold text-gray-800" id="globalProgress">0%</p>
+                </div>
+                <div class="h-10 w-10 rounded-full bg-gray-200 overflow-hidden border-2 border-white shadow-sm">
+                    <img src="https://api.dicebear.com/7.x/notionists/svg?seed=Felix" alt="User" class="h-full w-full object-cover">
+                </div>
+            </div>
+        </div>
     </header>
 
-    <div class="add-habit-box">
-        <input type="text" id="habit-input" placeholder="e.g., Read for 30 mins, Drink water...">
-        <button id="add-btn">Add Habit</button>
+    <!-- Main Content -->
+    <main class="max-w-3xl mx-auto px-4 sm:px-6 py-8 space-y-6" id="habitList">
+        <!-- Habits will be injected here via JS -->
+    </main>
+
+    <!-- Empty State (Hidden by default) -->
+    <div id="emptyState" class="hidden flex flex-col items-center justify-center py-20 text-center">
+        <div class="w-24 h-24 bg-blue-100 rounded-full flex items-center justify-center mb-6">
+            <i class="fa-solid fa-seedling text-4xl text-blue-500"></i>
+        </div>
+        <h3 class="text-xl font-bold text-gray-800">No habits yet</h3>
+        <p class="text-gray-500 mt-2 max-w-xs mx-auto">Start building your streak today. Add a new habit to get started.</p>
     </div>
 
-    <div id="habit-list" class="habit-list">
+    <!-- Floating Action Button -->
+    <button onclick="openModal()" class="fixed bottom-6 right-6 md:bottom-10 md:right-10 w-14 h-14 bg-black text-white rounded-full shadow-2xl flex items-center justify-center hover:scale-110 transition-transform active:scale-95 z-40 focus:outline-none">
+        <i class="fa-solid fa-plus text-xl"></i>
+    </button>
+
+    <!-- Add Habit Modal -->
+    <div id="addModal" class="fixed inset-0 z-50 hidden">
+        <!-- Backdrop -->
+        <div class="absolute inset-0 bg-gray-900/30 backdrop-blur-sm transition-opacity" onclick="closeModal()"></div>
+        
+        <!-- Modal Content -->
+        <div class="absolute bottom-0 inset-x-0 sm:top-1/2 sm:left-1/2 sm:bottom-auto sm:-translate-x-1/2 sm:-translate-y-1/2 sm:w-full sm:max-w-md bg-white sm:rounded-3xl rounded-t-3xl p-6 shadow-2xl modal-animate transform">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold text-gray-900">New Habit</h2>
+                <button onclick="closeModal()" class="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center hover:bg-gray-200 transition-colors">
+                    <i class="fa-solid fa-times"></i>
+                </button>
+            </div>
+
+            <form id="habitForm" onsubmit="addHabit(event)">
+                <div class="space-y-4">
+                    <!-- Name Input -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Habit Name</label>
+                        <input type="text" id="habitName" required placeholder="e.g., Read 30 mins" class="w-full bg-gray-50 border-none rounded-xl px-4 py-3 text-lg font-medium focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all placeholder-gray-300">
+                    </div>
+
+                    <!-- Color Selection -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Color Theme</label>
+                        <div class="flex space-x-3 overflow-x-auto pb-2 no-scrollbar" id="colorPicker">
+                            <!-- Colors generated by JS -->
+                        </div>
+                    </div>
+
+                    <!-- Icon Selection -->
+                    <div>
+                        <label class="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Icon</label>
+                        <div class="grid grid-cols-6 gap-2" id="iconPicker">
+                            <!-- Icons generated by JS -->
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-8">
+                    <button type="submit" class="w-full bg-black text-white font-bold py-4 rounded-xl shadow-lg hover:shadow-xl active:scale-95 transition-all">
+                        Create Habit
+                    </button>
+                </div>
+            </form>
         </div>
-</div>
+    </div>
 
-<script>
-    // --- State Management ---
-    let habits = JSON.parse(localStorage.getItem('habits')) || [];
+    <!-- JS Logic -->
+    <script>
+        // --- Configuration & Data ---
+        const COLORS = [
+            { bg: 'bg-red-500', text: 'text-red-500', light: 'bg-red-50', shadow: 'shadow-red-200' },
+            { bg: 'bg-orange-500', text: 'text-orange-500', light: 'bg-orange-50', shadow: 'shadow-orange-200' },
+            { bg: 'bg-yellow-500', text: 'text-yellow-500', light: 'bg-yellow-50', shadow: 'shadow-yellow-200' },
+            { bg: 'bg-green-500', text: 'text-green-500', light: 'bg-green-50', shadow: 'shadow-green-200' },
+            { bg: 'bg-teal-500', text: 'text-teal-500', light: 'bg-teal-50', shadow: 'shadow-teal-200' },
+            { bg: 'bg-blue-500', text: 'text-blue-500', light: 'bg-blue-50', shadow: 'shadow-blue-200' },
+            { bg: 'bg-indigo-500', text: 'text-indigo-500', light: 'bg-indigo-50', shadow: 'shadow-indigo-200' },
+            { bg: 'bg-purple-500', text: 'text-purple-500', light: 'bg-purple-50', shadow: 'shadow-purple-200' },
+            { bg: 'bg-pink-500', text: 'text-pink-500', light: 'bg-pink-50', shadow: 'shadow-pink-200' },
+        ];
 
-    const daysOfWeek = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+        const ICONS = [
+            'fa-book', 'fa-running', 'fa-glass-water', 'fa-bed', 'fa-dumbbell',
+            'fa-laptop-code', 'fa-carrot', 'fa-guitar', 'fa-pen-nib', 'fa-brain',
+            'fa-bicycle', 'fa-palette'
+        ];
 
-    const habitInput = document.getElementById('habit-input');
-    const addBtn = document.getElementById('add-btn');
-    const habitList = document.getElementById('habit-list');
+        let habits = JSON.parse(localStorage.getItem('habits')) || [];
+        
+        let selectedColorIndex = 5; // Default Blue
+        let selectedIconIndex = 0;
 
-    // --- Functions ---
-
-    function saveHabits() {
-        localStorage.setItem('habits', JSON.stringify(habits));
-        renderHabits();
-    }
-
-    function addHabit() {
-        const text = habitInput.value.trim();
-        if (text === "") return;
-
-        const newHabit = {
-            id: Date.now(),
-            name: text,
-            completed: [false, false, false, false, false, false, false] // 7 days
-        };
-
-        habits.unshift(newHabit); // Add to top
-        habitInput.value = "";
-        saveHabits();
-    }
-
-    function deleteHabit(id) {
-        if(confirm('Are you sure you want to delete this habit?')) {
-            habits = habits.filter(h => h.id !== id);
-            saveHabits();
-        }
-    }
-
-    function toggleDay(habitId, dayIndex) {
-        const habit = habits.find(h => h.id === habitId);
-        if (habit) {
-            habit.completed[dayIndex] = !habit.completed[dayIndex];
-            saveHabits();
-        }
-    }
-
-    function renderHabits() {
-        habitList.innerHTML = "";
-
-        if (habits.length === 0) {
-            habitList.innerHTML = `<p style="text-align:center; color:#9ca3af; margin-top:20px;">No habits yet. Start by adding one!</p>`;
-            return;
+        // --- Date Logic ---
+        const today = new Date();
+        const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+        
+        // Generate last 7 days for the weekly view
+        const weekDates = [];
+        for (let i = 6; i >= 0; i--) {
+            const d = new Date(today);
+            d.setDate(today.getDate() - i);
+            weekDates.push({
+                dateObj: d,
+                dayName: days[d.getDay()],
+                dayNum: d.getDate(),
+                iso: d.toISOString().split('T')[0]
+            });
         }
 
-        habits.forEach(habit => {
-            const completedCount = habit.completed.filter(Boolean).length;
-            const progressPercent = (completedCount / 7) * 100;
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', () => {
+            renderHeaderDate();
+            renderHabits();
+            setupModal();
+        });
 
-            const div = document.createElement('div');
-            div.className = 'habit-card';
+        function renderHeaderDate() {
+            const options = { weekday: 'long', month: 'long', day: 'numeric' };
+            document.getElementById('currentDate').textContent = today.toLocaleDateString('en-US', options);
+        }
 
-            let daysHtml = '';
-            daysOfWeek.forEach((day, index) => {
-                const isCompleted = habit.completed[index] ? 'completed' : '';
-                daysHtml += `
-                    <div class="day-column">
-                        <span class="day-label">${day}</span>
-                        <div class="check-circle ${isCompleted}" 
-                             onclick="toggleDay(${habit.id}, ${index})"></div>
+        // --- Rendering ---
+        function renderHabits() {
+            const container = document.getElementById('habitList');
+            const emptyState = document.getElementById('emptyState');
+            container.innerHTML = '';
+
+            if (habits.length === 0) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+
+            // Calculate global progress
+            let totalChecks = 0;
+            let totalPossible = habits.length * 1; // Calculating only for today for the global percent
+            let todayChecks = 0;
+
+            habits.forEach(habit => {
+                const colorTheme = COLORS[habit.colorIndex];
+                const todayISO = weekDates[6].iso; // Last item is today
+                if (habit.history[todayISO]) todayChecks++;
+
+                const card = document.createElement('div');
+                card.className = `glass habit-card rounded-3xl p-5 mb-4 border-2 border-transparent hover:border-white/50`;
+                
+                // Calculate streak
+                let streak = calculateStreak(habit);
+
+                // Grid of last 7 days
+                let daysHTML = '';
+                weekDates.forEach((day, index) => {
+                    const isToday = index === 6;
+                    const isCompleted = habit.history[day.iso];
+                    
+                    // Style logic for the checkbox
+                    let checkClass = isCompleted 
+                        ? `${colorTheme.bg} text-white shadow-lg ${colorTheme.shadow}` 
+                        : `bg-gray-200 text-transparent hover:bg-gray-300`;
+
+                    // Today's circle is slightly larger
+                    let sizeClass = isToday ? 'w-10 h-10 sm:w-12 sm:h-12 text-lg' : 'w-8 h-8 sm:w-9 sm:h-9 text-sm';
+
+                    daysHTML += `
+                        <div class="flex flex-col items-center space-y-2">
+                            <span class="text-xs font-medium ${isToday ? 'text-gray-900 font-bold' : 'text-gray-400'}">${day.dayName}</span>
+                            <button 
+                                onclick="toggleHabit('${habit.id}', '${day.iso}')"
+                                class="${sizeClass} rounded-full flex items-center justify-center check-circle ${checkClass}"
+                            >
+                                <i class="fa-solid fa-check"></i>
+                            </button>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-4">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 rounded-2xl ${colorTheme.light} ${colorTheme.text} flex items-center justify-center text-xl shadow-inner">
+                                <i class="fa-solid ${ICONS[habit.iconIndex]}"></i>
+                            </div>
+                            <div>
+                                <h3 class="text-lg font-bold text-gray-800">${habit.name}</h3>
+                                <div class="flex items-center text-xs font-medium text-gray-500 space-x-2">
+                                    <span class="bg-gray-100 px-2 py-0.5 rounded-md text-gray-600">
+                                        <i class="fa-solid fa-fire text-orange-500 mr-1"></i> ${streak} day streak
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="deleteHabit('${habit.id}')" class="text-gray-300 hover:text-red-400 transition-colors self-end sm:self-auto p-2">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="grid grid-cols-7 gap-1 sm:gap-2 mt-2">
+                        ${daysHTML}
                     </div>
                 `;
+                container.appendChild(card);
             });
 
-            div.innerHTML = `
-                <div class="habit-header">
-                    <span class="habit-title">${habit.name}</span>
-                    <button class="delete-btn" onclick="deleteHabit(${habit.id})">&times;</button>
+            // Update Global Stats
+            const percent = habits.length > 0 ? Math.round((todayChecks / habits.length) * 100) : 0;
+            document.getElementById('globalProgress').textContent = `${percent}%`;
+        }
+
+        function setupModal() {
+            // Setup Colors
+            const colorContainer = document.getElementById('colorPicker');
+            colorContainer.innerHTML = COLORS.map((c, i) => `
+                <div onclick="selectColor(${i})" 
+                     class="cursor-pointer w-10 h-10 rounded-full ${c.bg} flex-shrink-0 border-4 ${i === selectedColorIndex ? 'border-gray-800' : 'border-transparent'} transition-all"
+                ></div>
+            `).join('');
+
+            // Setup Icons
+            const iconContainer = document.getElementById('iconPicker');
+            iconContainer.innerHTML = ICONS.map((icon, i) => `
+                <div onclick="selectIcon(${i})"
+                     class="cursor-pointer aspect-square rounded-xl flex items-center justify-center text-gray-500 bg-gray-100 hover:bg-gray-200 ${i === selectedIconIndex ? 'ring-2 ring-black bg-gray-200 text-gray-900' : ''} transition-all"
+                >
+                    <i class="fa-solid ${icon}"></i>
                 </div>
-                <div class="week-grid">
-                    ${daysHtml}
-                </div>
-                <div class="progress-container">
-                    <div class="progress-bar" style="width: ${progressPercent}%"></div>
-                </div>
-                <div class="stats">${completedCount} / 7 days</div>
-            `;
-            habitList.appendChild(div);
-        });
-    }
+            `).join('');
+        }
 
-    // --- Event Listeners ---
-    addBtn.addEventListener('click', addHabit);
+        // --- Actions ---
 
-    habitInput.addEventListener('keypress', function (e) {
-        if (e.key === 'Enter') addHabit();
-    });
+        function toggleHabit(id, isoDate) {
+            const habit = habits.find(h => h.id === id);
+            if (habit) {
+                // Toggle state
+                if (habit.history[isoDate]) {
+                    delete habit.history[isoDate];
+                } else {
+                    habit.history[isoDate] = true;
+                    // Trigger haptic/visual feedback logic here if needed
+                }
+                saveHabits();
+                renderHabits();
+            }
+        }
 
-    // --- Init ---
-    renderHabits();
+        function addHabit(e) {
+            e.preventDefault();
+            const nameInput = document.getElementById('habitName');
+            const name = nameInput.value.trim();
+            
+            if (name) {
+                const newHabit = {
+                    id: Date.now().toString(),
+                    name: name,
+                    colorIndex: selectedColorIndex,
+                    iconIndex: selectedIconIndex,
+                    history: {} // Map of ISO dates to booleans
+                };
+                
+                habits.push(newHabit);
+                saveHabits();
+                
+                // Reset form
+                nameInput.value = '';
+                selectColor(5); // Reset to blue
+                selectIcon(0);
+                closeModal();
+                renderHabits();
+            }
+        }
 
-</script>
+        function deleteHabit(id) {
+            if(confirm('Are you sure you want to delete this habit?')) {
+                habits = habits.filter(h => h.id !== id);
+                saveHabits();
+                renderHabits();
+            }
+        }
 
+        function selectColor(index) {
+            selectedColorIndex = index;
+            setupModal(); // Re-render to show selection border
+        }
+
+        function selectIcon(index) {
+            selectedIconIndex = index;
+            setupModal(); // Re-render to show selection ring
+        }
+
+        function saveHabits() {
+            localStorage.setItem('habits', JSON.stringify(habits));
+        }
+
+        function calculateStreak(habit) {
+            let streak = 0;
+            // Simple logic: count backwards from yesterday. 
+            // If today is checked, add 1 to the streak found from yesterday.
+            
+            const todayISO = weekDates[6].iso;
+            let currentCheckDate = new Date();
+            
+            // Check if today is done, if so start streak count from today, otherwise from yesterday
+            if (!habit.history[todayISO]) {
+                currentCheckDate.setDate(currentCheckDate.getDate() - 1);
+            }
+
+            while (true) {
+                const iso = currentCheckDate.toISOString().split('T')[0];
+                if (habit.history[iso]) {
+                    streak++;
+                    currentCheckDate.setDate(currentCheckDate.getDate() - 1);
+                } else {
+                    break;
+                }
+            }
+            return streak;
+        }
+
+        // --- UI Helpers ---
+        function openModal() {
+            document.getElementById('addModal').classList.remove('hidden');
+        }
+
+        function closeModal() {
+            document.getElementById('addModal').classList.add('hidden');
+        }
+    </script>
 </body>
 </html>
+
